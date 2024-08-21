@@ -1,10 +1,6 @@
 import React from "react";
 
-interface LogoProp {
-  onClick: () => void;
-}
-
-const Logo: React.FC<LogoProp> = ({ onClick }) => {
+const Logo = ({ onClick }) => {
   return (
     <img
       alt=""

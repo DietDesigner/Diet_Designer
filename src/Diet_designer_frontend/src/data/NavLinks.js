@@ -1,9 +1,3 @@
-export interface NavLinksType {
-  navitem: string;
-  subMenus?: { menu: string; link: string }[];
-  link: string;
-}
-
 export const NavLinks = [
   {
     navitem: "Product",

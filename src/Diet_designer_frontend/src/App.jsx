@@ -1,30 +1,41 @@
-import { useState } from 'react';
-import { Diet_designer_backend } from 'declarations/Diet_designer_backend';
+import { Route, Routes } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+
+import Landingpage from "./pages/Home/Landingpage";
+import Header from "./components/Header/Header";
+import Login from "./pages/Auth/Login";
+import WelcomeScreen from "./pages/Planners/WelcomeScreen";
+import { StepProvider } from "./pages/Planners/StepContext";
+import { BaseStep } from "./pages/Planners/BaseStepComponent";
 
 function App() {
-  const [greeting, setGreeting] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    Diet_designer_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
-
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <StepProvider>
+      <div>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Landingpage />} />
+          {/* <Route path="/sign-up" element={<SignUpAttendee />} /> */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/welcome" element={<WelcomeScreen />} />
+          <Route path="/create-meal-plan" element={<BaseStep />} />
+        </Routes>
+
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+      </div>
+    </StepProvider>
   );
 }
 

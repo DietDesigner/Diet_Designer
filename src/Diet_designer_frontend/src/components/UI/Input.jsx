@@ -16,23 +16,6 @@ const Input = ({
   disabled,
   defaultValue,
   className,
-}: {
-  name?: string;
-  label?: string;
-  type?: string;
-  value?: string;
-  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  onChangeInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  icon?: any;
-  onClick?: any;
-  error?: string;
-  touched?: any;
-  fieldProps?: any;
-  placeholder?: string;
-  accept?: string;
-  disabled?: boolean;
-  defaultValue?: string;
-  className?: string;
 }) => {
   const inputBorderColor = touched && error ? "input-error" : "";
   return (

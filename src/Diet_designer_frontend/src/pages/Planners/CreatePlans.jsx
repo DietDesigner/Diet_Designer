@@ -19,7 +19,7 @@ const CreatePlans = () => {
     Array(7).fill(false) // Assuming you have 7 divs to manage
   );
 
-  const handleToggle = (index: number) => {
+  const handleToggle = (index) => {
     // Toggle the selected state of the clicked div
     const updatedStates = selectedStates.map((selected, i) =>
       i === index ? !selected : selected

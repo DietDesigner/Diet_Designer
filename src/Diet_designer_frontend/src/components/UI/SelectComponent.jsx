@@ -16,30 +16,15 @@ const SelectComponent = ({
   defaultValue,
   placeholder,
   isMulti,
-}: {
-  label?: string;
-  defaultValue?: string;
-  type?: string;
-  options?: string[] | [];
-  value?: string | [];
-  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  icon?: React.ReactNode;
-  onClick?: () => void;
-  name?: string;
-  error?: string;
-  touched?: boolean;
-  fieldProps?: any;
-  placeholder?: string;
-  isMulti?: boolean;
 }) => {
   const inputBorderColor = touched && error ? "input-error" : "";
 
   return (
     <div className="flex w-full flex-col gap-2">
-      {label && <p className="text-sm">{label}</p>}
+      {label && <p className="text-sm font-bold">{label}</p>}
       <label>
         <select
-          className={`custom-select select select-bordered w-full rounded-[4px]  focus:outline-none ${inputBorderColor}`}
+          className={`select select-bordered w-full rounded-[4px]  focus:outline-none ${inputBorderColor}`}
           name={name}
           defaultValue={defaultValue}
           type={type}

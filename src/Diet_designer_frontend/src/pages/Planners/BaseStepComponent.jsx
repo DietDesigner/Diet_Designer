@@ -15,8 +15,8 @@ export const BaseStep = () => {
       {currentStep === 1 && <CreatePlans />}
       {currentStep === 2 && <StepTwo />}
       {currentStep === 3 && <StepThree />}
-      {currentStep === 4 && <StepFour />}
-      {currentStep === 5 && <Summary />}
+      {/* {currentStep === 4 && <StepFour />} */}
+      {currentStep === 4 && <Summary />}
     </div>
   );
 };

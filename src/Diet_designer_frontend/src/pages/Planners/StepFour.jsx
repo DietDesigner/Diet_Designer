@@ -29,10 +29,7 @@ const StepFour = () => {
           />
 
           <div className="flex flex-col gap-[1rem] w-full">
-            <form
-              className="flex flex-col gap-2"
-              // onSubmit={formik.handleSubmit}
-            >
+            <form className="flex flex-col gap-2">
               <div>
                 <p className="mt-[40px] text-[#141414] text-[14px] font-[600]">
                   How many times do you want to cook in 7 days?
@@ -43,10 +40,6 @@ const StepFour = () => {
                       type="radio"
                       value="2"
                       className="radio radio-secondary radio-xs"
-                      //   checked={formik.values.attendanceRole === "yes"}
-                      //   onChange={formik.handleChange}
-                      //   onBlur={formik.handleBlur}
-                      //   name="attendanceRole"
                     />{" "}
                     <label htmlFor="yes">Once everyday</label>
                   </div>
@@ -56,9 +49,6 @@ const StepFour = () => {
                       name="attendanceRole"
                       className="radio radio-secondary radio-xs"
                       value="3"
-                      //   checked={formik.values.attendanceRole === "no"}
-                      //   onChange={formik.handleChange}
-                      //   onBlur={formik.handleBlur}
                     />{" "}
                     <label htmlFor="no">Twice everyday</label>
                   </div>
@@ -68,20 +58,10 @@ const StepFour = () => {
                       name="attendanceRole"
                       value="4"
                       className="radio radio-secondary radio-xs"
-
-                      //   checked={formik.values.attendanceRole === "no"}
-                      //   onChange={formik.handleChange}
-                      //   onBlur={formik.handleBlur}
                     />{" "}
                     <label htmlFor="no">Thrice everyday</label>
                   </div>
                 </div>
-                {/* {formik.touched.attendanceRole &&
-                formik.errors.attendanceRole ? (
-                  <div className="text-[red]">
-                    {formik.errors.attendanceRole}
-                  </div>
-                ) : null} */}
               </div>
 
               <div className="w-full md:w-[330px] h-[300px] bg-[#ECE6F0] mt-[2rem] pl-[14px] pt-[1rem]">
@@ -124,7 +104,6 @@ const StepFour = () => {
 
               <div className="flex flex-col gap-2 mb-[2rem] mt-[2rem]">
                 <button
-                  //   type="submit"
                   className="btn text-[#fff] bg-[#990099] hover:bg-[#F0E6F0] w-[100%] border-0 rounded-md p-2"
                   onClick={handleNext}
                 >

@@ -2,14 +2,60 @@ import { useState } from "react";
 import SpinnerLoading from "./Spinner";
 import { useNavigate } from "react-router-dom";
 import { useStep } from "./StepContext";
+import { Diet_designer_backend } from "declarations/Diet_designer_backend";
+import { toast } from "react-toastify";
+import useUtilityService from "../../hooks/UtilityService";
+import { Spinner } from "@chakra-ui/react";
 
 const Summary = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { goToPreviousStep, formData, updateFormData } = useStep();
 
+  const { goToPreviousStep, formData, updateFormData } = useStep();
+  const { getPrincipalFromLocalStorage } = useUtilityService();
+  const principal = getPrincipalFromLocalStorage();
+  console.log("principal", principal);
+  console.log(formData);
   const handlePrev = () => {
     updateFormData({ stepOneData: "some data" });
     goToPreviousStep();
+  };
+
+  const handleGeneratePlan = async () => {
+    const UserPreferences = {
+      allergies: formData?.allergies,
+      country: formData?.country,
+      dietary_restrictions: formData?.dietary_restrictions,
+      disliked_foods: formData?.disliked_foods,
+      favorite_foods: formData?.favorite_foods,
+      mealPlan_purpose: formData?.mealPlan_purpose,
+    };
+
+    const NutritionalGoals = {
+      caloric_intake: formData?.caloric_intake,
+    };
+    setIsLoading(true);
+    try {
+      const response = await Diet_designer_backend.createMealPlan(
+        formData?.mealTitle,
+        UserPreferences,
+        NutritionalGoals,
+        principal?.__principal__,
+        formData?.override
+      );
+      console.log(response);
+      if (response) {
+        navigate("/create-meal-plan");
+        setTimeout(() => {
+          window.location.reload();
+        }, 0);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      toast.error(error);
+      setIsLoading(false);
+    }
   };
   return (
     <div>
@@ -26,10 +72,7 @@ const Summary = () => {
           <p className="font-[600]">Input Summary</p>
 
           <div className="flex flex-col gap-[1rem] w-full">
-            <form
-              className="flex flex-col gap-2"
-              // onSubmit={formik.handleSubmit}
-            >
+            <form className="flex flex-col gap-2">
               <div>
                 <div className="flex flex-col mb-4">
                   <label className="text-sm font-semibold text-gray-800 mb-2">
@@ -40,6 +83,31 @@ const Summary = () => {
                     id="plan-name"
                     placeholder="Carbohydrate Plan"
                     className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.mealTitle}
+                  />
+                </div>
+                <div className="flex flex-col mb-4">
+                  <label className="text-sm font-semibold text-gray-800 mb-2">
+                    Calorific Intake
+                  </label>
+                  <input
+                    type="text"
+                    id="plan-name"
+                    placeholder="Carbohydrate Plan"
+                    className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.caloric_intake}
+                  />
+                </div>
+                <div className="flex flex-col mb-4">
+                  <label className="text-sm font-semibold text-gray-800 mb-2">
+                    Your country
+                  </label>
+                  <input
+                    type="text"
+                    id="plan-name"
+                    placeholder="Carbohydrate Plan"
+                    className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.country}
                   />
                 </div>
                 <div className="flex flex-col mb-4">
@@ -51,6 +119,7 @@ const Summary = () => {
                     id="plan-name"
                     placeholder="Carbohydrate Plan"
                     className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.mealPlan_purpose}
                   />
                 </div>
                 <div className="flex flex-col mb-4">
@@ -62,113 +131,84 @@ const Summary = () => {
                     id="plan-name"
                     placeholder="Yes"
                     className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.dietary_restrictions}
                   />
                 </div>
                 <div className="flex flex-col mb-4">
                   <label className="text-sm font-semibold text-gray-800 mb-2">
-                    How many times do you plan to eat per day?
+                    Do you have any allergy?
                   </label>
                   <input
                     type="text"
                     id="plan-name"
                     placeholder="2"
                     className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.allergies}
                   />
                 </div>
                 <div className="flex flex-col mb-4">
                   <label className="text-sm font-semibold text-gray-800 mb-2">
-                    How often do you cook?
+                    Your favorite food
                   </label>
                   <input
                     type="text"
                     id="plan-name"
                     placeholder="Weekly"
                     className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.favorite_foods}
                   />
                 </div>
                 <div className="flex flex-col mb-4">
                   <label className="text-sm font-semibold text-gray-800 mb-2">
-                    How many times per day do you cook?
+                    Any food you disliked?
                   </label>
                   <input
                     type="text"
                     id="plan-name"
                     placeholder="2"
                     className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.disliked_foods}
                   />
                 </div>
                 <div className="flex flex-col mb-4">
                   <label className="text-sm font-semibold text-gray-800 mb-2">
-                    Which method applies to you?
+                    Generate plan with previous meal plan name?
                   </label>
                   <input
                     type="text"
                     id="plan-name"
                     placeholder="I cook multiple times in the day"
                     className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
+                    value={formData?.override}
                   />
-                </div>
-                <div className="flex flex-col mb-4">
-                  <label className="text-sm font-semibold text-gray-800 mb-2">
-                    Input your preferred meals
-                  </label>
-                  <input
-                    type="text"
-                    id="plan-name"
-                    placeholder="I cook multiple times in the day"
-                    className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
-                  />
-                </div>
-                <div className="flex flex-col mb-4">
-                  <label className="text-sm font-semibold text-gray-800 mb-2">
-                    How many times do you want to cook in 7 days?
-                  </label>
-                  <input
-                    type="text"
-                    id="plan-name"
-                    placeholder="Twice Everyday"
-                    className="appearance-none border-b-2 border-gray-300 w-full py-2 text-gray-500 focus:outline-none focus:border-gray-500"
-                  />
-                </div>
-
-                <div className="w-full md:w-[330px] h-[90px] rounded-md bg-[#ECE6F0] mt-[2rem] pl-[14px] pt-[1rem]">
-                  <div className="flex items-center bg-[transparent] p-4 rounded-md">
-                    <div className="relative w-1/2">
-                      <label className="absolute -top-3 left-2 bg-[#f2edf7] text-[#6e47a1] px-1 text-sm">
-                        Date
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="mm/dd/yyyy"
-                        className="w-full p-2 border-2 border-[#6e47a1] rounded-md rounded-tl-none focus:outline-none focus:border-[#6e47a1] bg-[#f2edf7]"
-                      />
-                    </div>
-                    <div className="relative w-1/2 ml-4">
-                      <input
-                        type="text"
-                        placeholder="End date"
-                        className="w-full p-2 border-2 border-[#6e47a1] rounded-md focus:outline-none focus:border-[#6e47a1] bg-[#f2edf7]"
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
 
               <div className="flex flex-row gap-2 mb-[2rem] mt-[2rem]">
                 <button
-                  //   type="submit"
-                  className="btn bg-[transparent] shadow-md border rounded-md text-[#990099] hover:bg-[#F0E6F0] w-[160px] md:w-[161px] h-auto md:h-[44px] border-0 rounded-md p-2"
+                  className="btn text-[#fff] bg-[#990099] hover:bg-[#F0E6F0] w-[160px] md:w-[161px] h-auto md:h-[44px] border-0 rounded-md p-2"
                   onClick={() => navigate("/")}
                 >
                   Edit Plan
                 </button>
-                <button
-                  //   type="submit"
-                  className="btn text-[#fff] bg-[#990099] hover:bg-[#F0E6F0] w-[160px] md:w-[161px] h-auto md:h-[44px] border-0 rounded-md p-2"
-                  onClick={() => navigate("/")}
-                >
-                  Generate Plan
-                </button>
+                {isLoading ? (
+                  <button className="btn bg-[transparent] shadow-md border rounded-md text-[#990099] hover:bg-[#F0E6F0] w-[160px] md:w-[161px] h-auto md:h-[44px] border-0 rounded-md p-2">
+                    <Spinner
+                      thickness="4px"
+                      speed="0.65s"
+                      emptyColor="gray.200"
+                      color="white"
+                      size="xs"
+                    />
+                  </button>
+                ) : (
+                  <button
+                    className="btn bg-[transparent] shadow-md border rounded-md text-[#990099] hover:bg-[#F0E6F0] w-[160px] md:w-[161px] h-auto md:h-[44px] border-0 rounded-md p-2"
+                    onClick={handleGeneratePlan}
+                  >
+                    Generate Plan
+                  </button>
+                )}
               </div>
             </form>
           </div>

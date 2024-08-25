@@ -27,7 +27,7 @@ const Input = ({
         <input
           disabled={disabled}
           name={name}
-          onChange={type === "text" ? onChangeInput : onChange}
+          onChange={onChange}
           type={type}
           value={value}
           defaultValue={defaultValue}

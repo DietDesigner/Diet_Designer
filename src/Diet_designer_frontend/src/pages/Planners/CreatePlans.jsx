@@ -1,13 +1,7 @@
 import { useState } from "react";
-import { useFormik } from "formik";
-// import { loginSchema } from "../utils/validation";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { CircularProgress } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
 import Input from "../../components/UI/Input";
-
 import { useStep } from "./StepContext";
+import useUtilityService from "../../hooks/UtilityService";
 
 export const mainServiceData = [
   "Frontend Developer",
@@ -15,62 +9,19 @@ export const mainServiceData = [
   "Full-Stack Engineer",
 ];
 const CreatePlans = () => {
-  const [selectedStates, setSelectedStates] = useState(
-    Array(7).fill(false) // Assuming you have 7 divs to manage
-  );
+  const [mealTitle, setMealTitle] = useState("");
+  const [country, setCountry] = useState("");
 
-  const handleToggle = (index) => {
-    // Toggle the selected state of the clicked div
-    const updatedStates = selectedStates.map((selected, i) =>
-      i === index ? !selected : selected
-    );
-    setSelectedStates(updatedStates);
-  };
-  const {
-    goToNextStep,
-    goToPreviousStep,
-    formData,
-    updateFormData,
-    currentStep,
-  } = useStep();
+  const { goToNextStep, goToPreviousStep, updateFormData } = useStep();
 
   const handleNext = () => {
-    updateFormData({ stepOneData: "some data" });
+    updateFormData({ mealTitle, country });
     goToNextStep();
   };
 
   const handlePrev = () => {
     goToPreviousStep();
   };
-
-  // const [login, { isLoading }] = useLoginMutation();
-
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-
-  // const handleLogin = async (values: any) => {
-  //   try {
-  //     const response = await login(values).unwrap();
-  //     console.log(response);
-  //     dispatch(setCredentials(response));
-  //     navigate("/user-profile");
-  //   } catch (err) {
-  //     console.log(err);
-  //     const loginError = loginErrorHandler(err);
-  //     toast.error(loginError);
-  //   }
-  // };
-
-  // const formik = useFormik({
-  //   initialValues: {
-  //     emailAddress: "",
-  //     password: "",
-  //   },
-  //   validationSchema: loginSchema,
-  //   onSubmit: (values) => {
-  //     handleLogin(values);
-  //   },
-  // });
 
   return (
     <div className={``}>
@@ -87,51 +38,22 @@ const CreatePlans = () => {
 
           <div className="bg-[#D9D9D9] w-full md:w-[330px] h-[264px] rounded-md pt-[1rem] pl-[1rem]"></div>
           <div className="flex flex-col gap-[1rem] w-full">
-            <form
-              className="flex flex-col gap-2"
-              // onSubmit={formik.handleSubmit}
-            >
+            <form className="flex flex-col gap-2">
               <Input
                 label="Name your new plan"
                 type={"text"}
-                // fieldProps={formik.getFieldProps("emailAddress")}
-                // touched={formik.touched.emailAddress}
-                // error={formik.errors.emailAddress}
                 placeholder="Enter the name of your plan"
+                value={mealTitle}
+                onChange={(e) => setMealTitle(e.target.value)}
+              />
+              <Input
+                label="Enter your country"
+                type={"text"}
+                placeholder="Enter your country"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
               />
             </form>
-
-            <p className="font-[600] ">Why do you want a new plan?</p>
-            <div className="flex flex-row flex-wrap cursor-pointer mb-[2rem] items-center gap-[.5rem]">
-              {[
-                "Weight",
-                "Scheduling",
-                "Monthly",
-                "Snacks",
-                "Snacks",
-                "Weight",
-                "Weight",
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className={`rounded-xl border p-2 ${
-                    selectedStates[index]
-                      ? "border-[#CC400C] bg-[#FBF1F1] flex flex-row"
-                      : ""
-                  }`}
-                  onClick={() => handleToggle(index)}
-                >
-                  {item}
-                  <img
-                    src="/assets/multiply.svg"
-                    width={18}
-                    height={18}
-                    alt=""
-                    className={`${selectedStates[index] ? "block" : "hidden"}`}
-                  />
-                </div>
-              ))}
-            </div>
 
             <div className="flex flex-col gap-2 mb-[2rem]">
               <button

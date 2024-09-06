@@ -417,6 +417,7 @@ public query func get_AI_Meal_Plan(principalId: Text): async (Nat, [MealPlan]) {
         // Debugging: Print out what is stored in the mealGeneration for the principal
         Debug.print("Checking meal plans for principal: " # Principal.toText(principal));
         
+        
         switch (mealGeneration.get(principal)) {
             case (?plans) {
                 Debug.print("Number of meal plans found: " # Nat.toText(plans.size()));

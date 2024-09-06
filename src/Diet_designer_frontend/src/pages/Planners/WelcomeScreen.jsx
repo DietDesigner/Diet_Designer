@@ -1,18 +1,10 @@
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useState } from "react";
-import { useFormik } from "formik";
-// import { loginSchema } from "../utils/validation";
-import { Link, useNavigate } from "react-router-dom";
-// import { loginErrorHandler } from "../utils/errorHandler";
-import { toast } from "react-toastify";
-// import { useLoginMutation } from "../redux/slices/apiSlice";
-import { CircularProgress } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
-// import { setCredentials } from "../redux/slices/authSlice";
-import Input from "../../components/UI/Input";
+import { useEffect, useState } from "react";
 import SelectComponent from "../../components/UI/SelectComponent";
 import { planData } from "../../data/plan";
 import { useStep } from "./StepContext";
+import useUtilityService from "../../hooks/UtilityService";
+import { Diet_designer_backend } from "declarations/Diet_designer_backend";
+import { useNavigate } from "react-router-dom";
 
 export const mainServiceData = [
   "Frontend Developer",
@@ -20,41 +12,41 @@ export const mainServiceData = [
   "Full-Stack Engineer",
 ];
 const WelcomeScreen = () => {
-  const { goToNextStep, formData, updateFormData } = useStep();
-
+  const { goToNextStep, updateFormData } = useStep();
+  const [count, setCount] = useState(null);
+  console.log(count);
+  const { getPrincipalFromLocalStorage } = useUtilityService();
+  const principal = getPrincipalFromLocalStorage();
+  const navigate = useNavigate();
   const handleNext = () => {
     updateFormData({ stepOneData: "some data" });
     goToNextStep();
   };
 
-  // const [login, { isLoading }] = useLoginMutation();
+  const getPlanCount = async () => {
+    try {
+      const response = await Diet_designer_backend.planCount(
+        principal?.__principal__
+      );
+      console.log(response);
+      setCount(Number(response));
+    } catch (e) {
+      console.log(e);
+      toast.error(e);
+    }
+  };
 
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getPlanCount();
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-  // const handleLogin = async (values: any) => {
-  //   try {
-  //     const response = await login(values).unwrap();
-  //     console.log(response);
-  //     dispatch(setCredentials(response));
-  //     navigate("/user-profile");
-  //   } catch (err) {
-  //     console.log(err);
-  //     const loginError = loginErrorHandler(err);
-  //     toast.error(loginError);
-  //   }
-  // };
-
-  // const formik = useFormik({
-  //   initialValues: {
-  //     emailAddress: "",
-  //     password: "",
-  //   },
-  //   validationSchema: loginSchema,
-  //   onSubmit: (values) => {
-  //     handleLogin(values);
-  //   },
-  // });
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -73,7 +65,13 @@ const WelcomeScreen = () => {
               Create New Meal Plan
             </button>
           </div>
-          <div className="bg-[#ACFFAC] w-full md:w-[191px] h-auto md:h-[136px] rounded-md pt-[1rem] pl-[1rem]">
+          <div
+            className="bg-[#ACFFAC] w-full md:w-[191px] h-auto md:h-[136px] rounded-md pt-[1rem] pl-[1rem]"
+            onClick={() => {
+              console.log("Navigating to meal plan details");
+              navigate("/meal-plan-details");
+            }}
+          >
             <img
               src="/assets/user-octagon.svg"
               width={40}
@@ -82,20 +80,13 @@ const WelcomeScreen = () => {
             />
 
             <p className="text-[20px] text-[#101828] font-[600] mt-[2rem]">
-              0 Meal plans
+              {count} Meal plan
             </p>
           </div>
           <div className="flex flex-col gap-[1rem] w-full">
-            <form
-              className="flex flex-col gap-2"
-              // onSubmit={formik.handleSubmit}
-            >
+            <form className="flex flex-col gap-2">
               <SelectComponent
                 type={"email"}
-                // fieldProps={formik.getFieldProps("emailAddress")}
-                // touched={formik.touched.emailAddress}
-                // error={formik.errors.emailAddress}
-                options={mainServiceData}
                 placeholder="My Meal Plans"
                 icon={
                   <img

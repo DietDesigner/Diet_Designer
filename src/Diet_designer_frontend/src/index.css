@@ -18,3 +18,23 @@ body {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
+
+/* Hide the entire app on non-mobile devices */
+@media (min-width: 768px) {
+  .desktop-warning {
+    display: block;
+  }
+  .app-container {
+    display: none;
+  }
+}
+
+/* Show the app on mobile devices */
+@media (max-width: 767px) {
+  .desktop-warning {
+    display: none;
+  }
+  .app-container {
+    display: block;
+  }
+}

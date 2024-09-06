@@ -9,10 +9,16 @@ import Blob "mo:base/Blob";
 import Cycles "mo:base/ExperimentalCycles";
 import Nat8 "mo:base/Nat8";
 import Error "mo:base/Error";
+import Random "mo:base/Random";
 import Serde "mo:serde";
 import Types "Types";
+import Fuzz "mo:fuzz";
+
+
 
 actor dietDesigner {
+
+
 
   type UserPreferences = {
     dietary_restrictions : Text;
@@ -72,16 +78,12 @@ actor dietDesigner {
     // Maximum number of MealRequests per Principal
   // let MAX_MEAL_REQUESTS: Nat = 5;
 
-  let maxUsers: Nat = 2;
+  let maxUsers: Nat = 100;
+  let maxMealPlan: Nat = 3;
   var storedPrincipals: HashMap.HashMap<Principal, [MealRequest]> = HashMap.HashMap<Principal, [MealRequest]>(0, Principal.equal, Principal.hash);
   var mealGeneration: HashMap.HashMap<Principal, [MealPlan]> = HashMap.HashMap<Principal, [MealPlan]>(0, Principal.equal, Principal.hash);
 
 
-  type CVAnalysis = {
-    skills: Text;
-    work_experience: Text;
-    suggestions: Text;
-  };
 
 public func storePrincipal(principalId: Text): async ?([MealRequest], [MealPlan]) {
     let principal = Principal.fromText(principalId);
@@ -135,7 +137,7 @@ public func createMealPlan(
 
   switch (storedPrincipals.get(principal)) {
     case (?plans) {
-      if (plans.size() > 2) {
+      if (plans.size() > maxMealPlan) {
         throw Error.reject("Maximum plan size reached for beta");
       };
 
@@ -326,13 +328,22 @@ public query func get_AI_Meal_Plan(principalId: Text): async (Nat, [MealPlan]) {
 
 
     //Get all the principal 
-  public func getAllPrincipals(): async ([Principal], Nat) {
+  // func getAllPrincipals(): async ([Principal], Nat) {
+  //     var principals : [Principal] = [];
+  //     for (k in storedPrincipals.keys()) {
+  //       principals := Array.append(principals, [k]);
+  //     };
+  //     let count = principals.size();
+  //     return (principals, count);
+  // };
+
+  public func total_Principals(): async Nat {
       var principals : [Principal] = [];
-      for (k in storedPrincipals.keys()) {
-        principals := Array.append(principals, [k]);
-      };
+      // for (k in storedPrincipals.keys()) {
+      //   principals := Array.append(principals, [k]);
+      // };
       let count = principals.size();
-      return (principals, count);
+      return count;
   };
   
 
@@ -400,23 +411,23 @@ public query func get_AI_Meal_Plan(principalId: Text): async (Nat, [MealPlan]) {
     };
 
 
-public query func planCount(principalId: Text): async Nat {
-    let principal = Principal.fromText(principalId);
-    
-    // Debugging: Print out what is stored in the mealGeneration for the principal
-    Debug.print("Checking meal plans for principal: " # Principal.toText(principal));
-    
-    switch (mealGeneration.get(principal)) {
-        case (?plans) {
-            Debug.print("Number of meal plans found: " # Nat.toText(plans.size()));
-            return plans.size();
-        };
-        case (null) {
-            Debug.print("No meal plans found for principal.");
-            return 0;
+    public query func planCount(principalId: Text): async Nat {
+        let principal = Principal.fromText(principalId);
+        
+        // Debugging: Print out what is stored in the mealGeneration for the principal
+        Debug.print("Checking meal plans for principal: " # Principal.toText(principal));
+        
+        switch (mealGeneration.get(principal)) {
+            case (?plans) {
+                Debug.print("Number of meal plans found: " # Nat.toText(plans.size()));
+                return plans.size();
+            };
+            case (null) {
+                Debug.print("No meal plans found for principal.");
+                return 0;
+            };
         };
     };
-};
 
 
 
@@ -446,13 +457,13 @@ public query func planCount(principalId: Text): async Nat {
 
     let ic : Types.IC = actor ("aaaaa-aa");
 
-    let host : Text = "icp-ai-service.fly.dev";
-    let url = "https://icp-ai-service.fly.dev/" # endpoint;
+    let host : Text = "icp-proxy.fly.dev";
+    let url = "https://icp-proxy.fly.dev/" # endpoint;
 
-    let idempotency_key: Text = generateUUID();
+    let idempotency_key: Text = await generateUUID();
     let request_headers = [
         { name = "Host"; value = host },
-        { name = "User-Agent"; value = "http_post_sample" },
+        { name = "User-Agent"; value = "DietDesigner" },
         { name= "Content-Type"; value = "application/json" },
         { name= "Idempotency-Key"; value = idempotency_key }
     ];
@@ -490,7 +501,19 @@ public query func planCount(principalId: Text): async Nat {
     result
   };
 
-  func generateUUID() : Text {
-    "UUID-123456789";
+   func generateUUID() : async Text {
+    // "UUID-123456789";
+      let blob = await Random.blob();
+      let fuzz = Fuzz.fromBlob(blob);
+
+      // Generate random alphanumeric text of specific lengths to form a UUID
+        let part1 = fuzz.text.randomAlphanumeric(8);    // 8 characters
+        let part2 = fuzz.text.randomAlphanumeric(4);    // 4 characters
+        let part3 = fuzz.text.randomAlphanumeric(4);    // 4 characters
+        let part4 = fuzz.text.randomAlphanumeric(8);    // 4 characters
+
+        // Combine parts into a UUID format
+        let uuid = part1 # "-" # part2 # "-" # part3 # "-" # part4  ;
+       return uuid
   };
 }
